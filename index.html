@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健身训练记录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .stats-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .exercise-record {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .exercise-record h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .exercise-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .muscle-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .muscle-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .muscle-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .muscle-card .volume {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .muscle-card .unit {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .total-volume {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .total-volume h3 {
+            margin-bottom: 10px;
+        }
+
+        .total-volume .volume {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .records-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            margin-top: 15px;
+        }
+
+        .clear-btn:hover {
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .export-import-section {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .export-btn:hover {
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .import-btn {
+            background: linear-gradient(135deg, #17a2b8, #6f42c1);
+        }
+
+        .import-btn:hover {
+            box-shadow: 0 10px 20px rgba(23, 162, 184, 0.3);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .history-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .date-filter {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-filter input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h4 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+
+            .export-import-section {
+                grid-template-columns: 1fr;
+            }
+
+            .date-filter {
+                flex-direction: column;
+            }
+
+            .date-filter input {
+                width: 100%;
+            }
+
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            .input-section, .stats-section {
+                padding: 20px;
+            }
+
+            .muscle-stats {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .muscle-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💪 健身训练记录</h1>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2>📋 记录训练</h2>
+                
+                <div class="form-group">
+                    <label for="exercise-select">选择动作：</label>
+                    <select id="exercise-select">
+                        <option value="">请选择动作</option>
+                    </select>
+                </div>
+                
+                <div class="input-row">
+                    <div class="form-group">
+                        <label for="sets">组数：</label>
+                        <input type="number" id="sets" min="1" placeholder="组数">
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">重量 (kg)：</label>
+                        <input type="number" id="weight" min="0" step="0.5" placeholder="重量">
+                    </div>
+                    <div class="form-group">
+                        <label for="reps">次数：</label>
+                        <input type="number" id="reps" min="1" placeholder="次数">
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="addExercise()">添加训练记录</button>
+                <button class="btn clear-btn" onclick="clearAllRecords()">清空所有记录</button>
+                
+                <div class="export-import-section">
+                    <button class="btn export-btn" onclick="exportData()">📤 导出数据</button>
+                    <button class="btn import-btn" onclick="document.getElementById('import-file').click()">📥 导入数据</button>
+                </div>
+                <input type="file" id="import-file" class="file-input" accept=".json" onchange="importData(event)">
+                
+                <div class="records-list" id="records-list">
+                    <h3 style="margin-top: 25px; margin-bottom: 15px; color: #333;">今日训练记录</h3>
+                </div>
+            </div>
+            
+            <div class="stats-section">
+                <h2>📊 训练统计</h2>
+                
+                <div class="total-volume">
+                    <h3>总训练容量</h3>
+                    <div class="volume" id="total-volume">0</div>
+                    <div class="unit">kg</div>
+                </div>
+                
+                <div class="muscle-stats" id="muscle-stats">
+                    <!-- 肌肉部位统计将在这里显示 -->
+                </div>
+                
+                <div class="history-section">
+                    <h3>📅 历史记录</h3>
+                    <div class="date-filter">
+                        <label for="date-from">从：</label>
+                        <input type="date" id="date-from" onchange="filterByDate()">
+                        <label for="date-to">到：</label>
+                        <input type="date" id="date-to" onchange="filterByDate()">
+                        <button class="btn" onclick="showAllHistory()" style="padding: 8px 15px; font-size: 14px;">显示全部</button>
+                    </div>
+                    
+                    <div class="history-stats" id="history-stats">
+                        <!-- 历史统计将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 预制的健身动作数据
+        const exercises = {
+            // 胸部
+            '平板卧推': '胸部',
+            '上斜卧推': '胸部',
+            '下斜卧推': '胸部',
+            '哑铃卧推': '胸部',
+            '哑铃飞鸟': '胸部',
+            '俯卧撑': '胸部',
+            '双杠臂屈伸': '胸部',
+            
+            // 背部
+            '引体向上': '背部',
+            '杠铃划船': '背部',
+            '哑铃划船': '背部',
+            '坐姿划船': '背部',
+            '高位下拉': '背部',
+            '硬拉': '背部',
+            '反向飞鸟': '背部',
+            
+            // 肩部
+            '肩上推举': '肩部',
+            '哑铃推举': '肩部',
+            '侧平举': '肩部',
+            '前平举': '肩部',
+            '后束飞鸟': '肩部',
+            '直立划船': '肩部',
+            '阿诺德推举': '肩部',
+            
+            // 手臂
+            '杠铃弯举': '手臂',
+            '哑铃弯举': '手臂',
+            '锤式弯举': '手臂',
+            '三头肌下压': '手臂',
+            '仰卧臂屈伸': '手臂',
+            '钻石俯卧撑': '手臂',
+            '集中弯举': '手臂',
+            
+            // 腿部
+            '深蹲': '腿部',
+            '硬拉': '腿部',
+            '腿举': '腿部',
+            '腿屈伸': '腿部',
+            '腿弯举': '腿部',
+            '保加利亚深蹲': '腿部',
+            '箭步蹲': '腿部',
+            '提踵': '腿部',
+            
+            // 核心
+            '仰卧起坐': '核心',
+            '平板支撑': '核心',
+            '俄罗斯转体': '核心',
+            '卷腹': '核心',
+            '悬垂举腿': '核心',
+            '侧卷腹': '核心',
+            '死虫': '核心'
+        };
+
+        // 训练记录数组
+        let trainingRecords = [];
+        
+        // 肌肉部位容量统计
+        let muscleVolumes = {};
+
+        // 数据库键名
+        const STORAGE_KEY = 'fitness_training_records';
+
+        // 初始化页面
+        function initPage() {
+            populateExerciseSelect();
+            loadDataFromStorage();
+            updateStats();
+            updateHistoryStats();
+            setDefaultDates();
+        }
+
+        // 从LocalStorage加载数据
+        function loadDataFromStorage() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    trainingRecords = data.records || [];
+                    // 重新构建日期对象
+                    trainingRecords.forEach(record => {
+                        record.timestamp = new Date(record.timestamp);
+                    });
+                    
+                    // 重新计算肌肉部位容量统计（只计算今天的）
+                    recalculateTodayVolumes();
+                } catch (error) {
+                    console.error('加载数据失败:', error);
+                    trainingRecords = [];
+                    muscleVolumes = {};
+                }
+            }
+        }
+
+        // 保存数据到LocalStorage
+        function saveDataToStorage() {
+            const data = {
+                records: trainingRecords,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // 重新计算今天的肌肉部位容量
+        function recalculateTodayVolumes() {
+            muscleVolumes = {};
+            const today = new Date().toDateString();
+            
+            trainingRecords.forEach(record => {
+                if (record.timestamp.toDateString() === today) {
+                    if (!muscleVolumes[record.muscleGroup]) {
+                        muscleVolumes[record.muscleGroup] = 0;
+                    }
+                    muscleVolumes[record.muscleGroup] += record.volume;
+                }
+            });
+        }
+
+        // 设置默认日期（最近7天）
+        function setDefaultDates() {
+            const today = new Date();
+            const weekAgo = new Date(today);
+            weekAgo.setDate(today.getDate() - 7);
+            
+            document.getElementById('date-from').value = weekAgo.toISOString().split('T')[0];
+            document.getElementById('date-to').value = today.toISOString().split('T')[0];
+        }
+
+        // 填充动作选择下拉菜单
+        function populateExerciseSelect() {
+            const select = document.getElementById('exercise-select');
+            
+            // 按部位分组显示
+            const muscleGroups = {};
+            Object.entries(exercises).forEach(([exercise, muscle]) => {
+                if (!muscleGroups[muscle]) {
+                    muscleGroups[muscle] = [];
+                }
+                muscleGroups[muscle].push(exercise);
+            });
+
+            Object.entries(muscleGroups).forEach(([muscle, exerciseList]) => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = muscle;
+                
+                exerciseList.forEach(exercise => {
+                    const option = document.createElement('option');
+                    option.value = exercise;
+                    option.textContent = exercise;
+                    optgroup.appendChild(option);
+                });
+                
+                select.appendChild(optgroup);
+            });
+        }
+
+        // 添加训练记录
+        function addExercise() {
+            const exerciseSelect = document.getElementById('exercise-select');
+            const setsInput = document.getElementById('sets');
+            const weightInput = document.getElementById('weight');
+            const repsInput = document.getElementById('reps');
+
+            const exercise = exerciseSelect.value;
+            const sets = parseInt(setsInput.value);
+            const weight = parseFloat(weightInput.value);
+            const reps = parseInt(repsInput.value);
+
+            // 验证输入
+            if (!exercise || !sets || !weight || !reps) {
+                alert('请填写完整的训练信息！');
+                return;
+            }
+
+            if (sets <= 0 || weight < 0 || reps <= 0) {
+                alert('请输入有效的数值！');
+                return;
+            }
+
+            // 计算训练容量 (组数 × 重量 × 次数)
+            const volume = sets * weight * reps;
+            
+            // 获取对应的肌肉部位
+            const muscleGroup = exercises[exercise];
+
+            // 创建训练记录
+            const record = {
+                id: Date.now(),
+                exercise: exercise,
+                sets: sets,
+                weight: weight,
+                reps: reps,
+                volume: volume,
+                muscleGroup: muscleGroup,
+                timestamp: new Date()
+            };
+
+            // 添加到记录数组
+            trainingRecords.push(record);
+
+            // 更新肌肉部位容量统计
+            if (!muscleVolumes[muscleGroup]) {
+                muscleVolumes[muscleGroup] = 0;
+            }
+            muscleVolumes[muscleGroup] += volume;
+
+            // 清空输入框
+            setsInput.value = '';
+            weightInput.value = '';
+            repsInput.value = '';
+
+            // 更新显示
+            updateRecordsList();
+            updateStats();
+            updateHistoryStats();
+            
+            // 保存到本地存储
+            saveDataToStorage();
+        }
+
+        // 更新训练记录列表
+        function updateRecordsList() {
+            const recordsList = document.getElementById('records-list');
+            
+            // 清空现有记录（保留标题）
+            const title = recordsList.querySelector('h3');
+            recordsList.innerHTML = '';
+            recordsList.appendChild(title);
+
+            // 显示今天的记录（倒序）
+            const today = new Date().toDateString();
+            const todayRecords = trainingRecords.filter(record => 
+                record.timestamp.toDateString() === today
+            );
+            
+            todayRecords.slice().reverse().forEach(record => {
+                const recordDiv = document.createElement('div');
+                recordDiv.className = 'exercise-record';
+                recordDiv.innerHTML = `
+                    <h4>${record.exercise}</h4>
+                    <div class="exercise-details">
+                        ${record.sets}组 × ${record.weight}kg × ${record.reps}次 = ${record.volume}kg
+                        <br>
+                        部位: ${record.muscleGroup} | 时间: ${record.timestamp.toLocaleTimeString()}
+                    </div>
+                `;
+                recordsList.appendChild(recordDiv);
+            });
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            // 计算今天的总容量
+            const today = new Date().toDateString();
+            const todayRecords = trainingRecords.filter(record => 
+                record.timestamp.toDateString() === today
+            );
+            const totalVolume = todayRecords.reduce((sum, record) => sum + record.volume, 0);
+            document.getElementById('total-volume').textContent = totalVolume.toFixed(1);
+
+            // 更新肌肉部位统计
+            const muscleStatsContainer = document.getElementById('muscle-stats');
+            muscleStatsContainer.innerHTML = '';
+
+            // 创建肌肉部位卡片
+            Object.entries(muscleVolumes).forEach(([muscle, volume]) => {
+                const muscleCard = document.createElement('div');
+                muscleCard.className = 'muscle-card';
+                muscleCard.innerHTML = `
+                    <h3>${muscle}</h3>
+                    <div class="volume">${volume.toFixed(1)}</div>
+                    <div class="unit">kg</div>
+                `;
+                muscleStatsContainer.appendChild(muscleCard);
+            });
+
+            // 如果没有任何训练记录，显示提示
+            if (Object.keys(muscleVolumes).length === 0) {
+                muscleStatsContainer.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">还没有训练记录，开始记录你的训练吧！</p>';
+            }
+        }
+
+        // 清空所有记录
+        function clearAllRecords() {
+            if (trainingRecords.length === 0) {
+                alert('没有记录需要清空！');
+                return;
+            }
+
+            if (confirm('确定要清空所有训练记录吗？此操作不可撤销！')) {
+                trainingRecords = [];
+                muscleVolumes = {};
+                updateRecordsList();
+                updateStats();
+                updateHistoryStats();
+                saveDataToStorage();
+                alert('所有记录已清空！');
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            if (trainingRecords.length === 0) {
+                alert('没有数据可以导出！');
+                return;
+            }
+
+            const data = {
+                records: trainingRecords,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fitness_records_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('数据导出成功！');
+        }
+
+        // 导入数据
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (!data.records || !Array.isArray(data.records)) {
+                        alert('导入文件格式不正确！');
+                        return;
+                    }
+
+                    if (confirm('导入数据将与现有数据合并，确定要继续吗？')) {
+                        // 重新构建日期对象
+                        const importedRecords = data.records.map(record => ({
+                            ...record,
+                            timestamp: new Date(record.timestamp),
+                            id: Date.now() + Math.random() // 确保ID唯一
+                        }));
+
+                        trainingRecords = [...trainingRecords, ...importedRecords];
+                        recalculateTodayVolumes();
+                        updateRecordsList();
+                        updateStats();
+                        updateHistoryStats();
+                        saveDataToStorage();
+                        
+                        alert(`成功导入 ${importedRecords.length} 条记录！`);
+                    }
+                } catch (error) {
+                    alert('导入文件解析失败，请检查文件格式！');
+                    console.error('导入错误:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+            // 清空文件输入，允许重复导入同一文件
+            event.target.value = '';
+        }
+
+        // 更新历史统计
+        function updateHistoryStats() {
+            const historyStatsContainer = document.getElementById('history-stats');
+            
+            if (trainingRecords.length === 0) {
+                historyStatsContainer.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">暂无历史记录</p>';
+                return;
+            }
+
+            // 计算历史统计数据
+            const totalRecords = trainingRecords.length;
+            const totalVolume = trainingRecords.reduce((sum, record) => sum + record.volume, 0);
+            const totalDays = new Set(trainingRecords.map(record => record.timestamp.toDateString())).size;
+            const avgVolumePerDay = totalDays > 0 ? totalVolume / totalDays : 0;
+
+            // 最常训练的动作
+            const exerciseCount = {};
+            trainingRecords.forEach(record => {
+                exerciseCount[record.exercise] = (exerciseCount[record.exercise] || 0) + 1;
+            });
+            const mostFrequentExercise = Object.entries(exerciseCount)
+                .sort(([,a], [,b]) => b - a)[0];
+
+            historyStatsContainer.innerHTML = `
+                <div class="stat-card">
+                    <h4>总记录数</h4>
+                    <div class="value">${totalRecords}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>总训练容量</h4>
+                    <div class="value">${totalVolume.toFixed(0)}<span style="font-size: 0.8em;">kg</span></div>
+                </div>
+                <div class="stat-card">
+                    <h4>训练天数</h4>
+                    <div class="value">${totalDays}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>日均容量</h4>
+                    <div class="value">${avgVolumePerDay.toFixed(0)}<span style="font-size: 0.8em;">kg</span></div>
+                </div>
+                <div class="stat-card">
+                    <h4>最常训练</h4>
+                    <div class="value" style="font-size: 1rem;">${mostFrequentExercise ? mostFrequentExercise[0] : '无'}</div>
+                </div>
+            `;
+        }
+
+        // 按日期筛选
+        function filterByDate() {
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            
+            if (!dateFrom || !dateTo) return;
+            
+            const fromDate = new Date(dateFrom);
+            const toDate = new Date(dateTo);
+            toDate.setHours(23, 59, 59, 999); // 包含结束日期的整天
+            
+            const filteredRecords = trainingRecords.filter(record => {
+                const recordDate = new Date(record.timestamp);
+                return recordDate >= fromDate && recordDate <= toDate;
+            });
+            
+            displayFilteredStats(filteredRecords, dateFrom, dateTo);
+        }
+
+        // 显示筛选后的统计
+        function displayFilteredStats(records, dateFrom, dateTo) {
+            const historyStatsContainer = document.getElementById('history-stats');
+            
+            if (records.length === 0) {
+                historyStatsContainer.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">该时间段内无训练记录</p>';
+                return;
+            }
+
+            const totalVolume = records.reduce((sum, record) => sum + record.volume, 0);
+            const uniqueDays = new Set(records.map(record => record.timestamp.toDateString())).size;
+            const avgVolumePerDay = uniqueDays > 0 ? totalVolume / uniqueDays : 0;
+
+            // 按部位统计
+            const muscleVolumeStats = {};
+            records.forEach(record => {
+                muscleVolumeStats[record.muscleGroup] = (muscleVolumeStats[record.muscleGroup] || 0) + record.volume;
+            });
+
+            let muscleStatsHtml = '';
+            Object.entries(muscleVolumeStats)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([muscle, volume]) => {
+                    muscleStatsHtml += `
+                        <div class="stat-card">
+                            <h4>${muscle}</h4>
+                            <div class="value">${volume.toFixed(0)}<span style="font-size: 0.8em;">kg</span></div>
+                        </div>
+                    `;
+                });
+
+            historyStatsContainer.innerHTML = `
+                <div class="stat-card">
+                    <h4>时间段</h4>
+                    <div class="value" style="font-size: 1rem;">${dateFrom} 至 ${dateTo}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>总记录数</h4>
+                    <div class="value">${records.length}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>总容量</h4>
+                    <div class="value">${totalVolume.toFixed(0)}<span style="font-size: 0.8em;">kg</span></div>
+                </div>
+                <div class="stat-card">
+                    <h4>训练天数</h4>
+                    <div class="value">${uniqueDays}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>日均容量</h4>
+                    <div class="value">${avgVolumePerDay.toFixed(0)}<span style="font-size: 0.8em;">kg</span></div>
+                </div>
+                ${muscleStatsHtml}
+            `;
+        }
+
+        // 显示全部历史
+        function showAllHistory() {
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            updateHistoryStats();
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
