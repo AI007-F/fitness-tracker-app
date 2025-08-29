@@ -306,6 +306,120 @@
             font-weight: 700;
         }
 
+        /* 饮食记录样式 */
+        .nutrition-targets {
+            margin-bottom: 20px;
+        }
+
+        .nutrition-targets h3 {
+            color: #333;
+            margin: 20px 0 15px 0;
+            padding: 10px 0;
+            border-bottom: 2px solid #eee;
+        }
+
+        .target-inputs {
+            margin-bottom: 25px;
+        }
+
+        .calculated-calories {
+            margin: 15px 0;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nutrition-progress {
+            margin: 20px 0;
+        }
+
+        .progress-item {
+            margin-bottom: 20px;
+        }
+
+        .progress-item h4 {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e1e5e9;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill.over-target {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .progress-text {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .day-type-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .day-type-display h3 {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 0;
+        }
+
+        .today-intake-list {
+            margin-top: 25px;
+        }
+
+        .intake-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .intake-item h5 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .intake-details {
+            color: #666;
+            font-size: 0.9rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .intake-details span {
+            background: white;
+            padding: 5px 8px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
         .date-filter {
             margin-bottom: 15px;
             display: flex;
@@ -510,6 +624,169 @@
                 </div>
             </div>
         </div>
+        
+        <!-- 饮食记录模块 -->
+        <div class="container" style="margin-top: 30px;">
+            <h1>🍎 饮食营养记录</h1>
+            
+            <div class="main-content">
+                <!-- 营养目标设置 -->
+                <div class="input-section">
+                    <h2>🎯 营养目标设置</h2>
+                    
+                    <div class="nutrition-targets">
+                        <h3>训练日目标</h3>
+                        <div class="target-inputs">
+                            <div class="form-group">
+                                <label>总热量 (大卡):</label>
+                                <input type="number" id="training-calories" placeholder="3150">
+                            </div>
+                            <div class="input-row">
+                                <div class="form-group">
+                                    <label>碳水 (g):</label>
+                                    <input type="number" id="training-carbs" placeholder="394">
+                                </div>
+                                <div class="form-group">
+                                    <label>蛋白 (g):</label>
+                                    <input type="number" id="training-protein" placeholder="236">
+                                </div>
+                                <div class="form-group">
+                                    <label>脂肪 (g):</label>
+                                    <input type="number" id="training-fat" placeholder="70">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3>休息日目标</h3>
+                        <div class="target-inputs">
+                            <div class="form-group">
+                                <label>总热量 (大卡):</label>
+                                <input type="number" id="rest-calories" placeholder="1850">
+                            </div>
+                            <div class="input-row">
+                                <div class="form-group">
+                                    <label>碳水 (g):</label>
+                                    <input type="number" id="rest-carbs" placeholder="231">
+                                </div>
+                                <div class="form-group">
+                                    <label>蛋白 (g):</label>
+                                    <input type="number" id="rest-protein" placeholder="140">
+                                </div>
+                                <div class="form-group">
+                                    <label>脂肪 (g):</label>
+                                    <input type="number" id="rest-fat" placeholder="41">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn" onclick="saveNutritionTargets()">保存营养目标</button>
+                    </div>
+                    
+                    <!-- 今日摄入记录 -->
+                    <div class="nutrition-intake" style="margin-top: 30px;">
+                        <h3>📝 今日摄入记录</h3>
+                        
+                        <div class="form-group">
+                            <label>今日类型:</label>
+                            <select id="day-type">
+                                <option value="training">训练日</option>
+                                <option value="rest">休息日</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>食物名称:</label>
+                            <input type="text" id="food-name" placeholder="例如: 燕麦粥">
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label>碳水 (g):</label>
+                                <input type="number" id="food-carbs" step="0.1" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label>蛋白 (g):</label>
+                                <input type="number" id="food-protein" step="0.1" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label>脂肪 (g):</label>
+                                <input type="number" id="food-fat" step="0.1" placeholder="0">
+                            </div>
+                        </div>
+                        
+                        <div class="calculated-calories">
+                            <strong>计算热量: <span id="calculated-calories">0</span> 大卡</strong>
+                        </div>
+                        
+                        <button class="btn" onclick="addFoodIntake()">添加摄入记录</button>
+                    </div>
+                </div>
+                
+                <!-- 营养统计和进度 -->
+                <div class="stats-section">
+                    <h2>📊 今日营养进度</h2>
+                    
+                    <div class="day-type-display">
+                        <h3 id="current-day-type">今日: 训练日</h3>
+                    </div>
+                    
+                    <!-- 营养进度条 -->
+                    <div class="nutrition-progress">
+                        <div class="progress-item">
+                            <h4>总热量</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="calories-progress"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="calories-current">0</span> / <span id="calories-target">0</span> 大卡
+                                (<span id="calories-percent">0</span>%)
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <h4>碳水化合物</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="carbs-progress"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="carbs-current">0</span> / <span id="carbs-target">0</span> g
+                                (<span id="carbs-percent">0</span>%)
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <h4>蛋白质</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="protein-progress"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="protein-current">0</span> / <span id="protein-target">0</span> g
+                                (<span id="protein-percent">0</span>%)
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <h4>脂肪</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="fat-progress"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span id="fat-current">0</span> / <span id="fat-target">0</span> g
+                                (<span id="fat-percent">0</span>%)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 今日摄入列表 -->
+                    <div class="today-intake-list">
+                        <h3>今日摄入列表</h3>
+                        <div id="intake-list">
+                            <!-- 摄入记录将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -577,16 +854,28 @@
         // 肌肉部位容量统计
         let muscleVolumes = {};
 
+        // 营养相关数据
+        let nutritionTargets = {
+            training: { calories: 3150, carbs: 394, protein: 236, fat: 70 },
+            rest: { calories: 1850, carbs: 231, protein: 140, fat: 41 }
+        };
+        let nutritionIntakeRecords = [];
+
         // 数据库键名
         const STORAGE_KEY = 'fitness_training_records';
+        const NUTRITION_TARGETS_KEY = 'nutrition_targets';
+        const NUTRITION_INTAKE_KEY = 'nutrition_intake_records';
 
         // 初始化页面
         function initPage() {
             populateExerciseSelect();
             loadDataFromStorage();
+            loadNutritionData();
             updateStats();
             updateHistoryStats();
             setDefaultDates();
+            updateNutritionProgress();
+            setupNutritionEventListeners();
         }
 
         // 从LocalStorage加载数据
@@ -893,10 +1182,12 @@
             const data = {
                 // 原始数据
                 records: trainingRecords,
+                nutritionIntake: nutritionIntakeRecords,
+                nutritionTargets: nutritionTargets,
                 
                 // 导出元数据
                 exportDate: new Date().toISOString(),
-                version: '2.0',
+                version: '2.1',
                 
                 // 总体统计
                 summary: {
@@ -1004,12 +1295,30 @@
                         trainingRecords.sort((a, b) => a.timestamp - b.timestamp);
                         
                         recalculateTodayVolumes();
+                        // 导入营养数据（如果存在）
+                        if (data.nutritionTargets) {
+                            nutritionTargets = { ...nutritionTargets, ...data.nutritionTargets };
+                            localStorage.setItem(NUTRITION_TARGETS_KEY, JSON.stringify(nutritionTargets));
+                            fillNutritionTargets();
+                        }
+                        
+                        if (data.nutritionIntake && Array.isArray(data.nutritionIntake)) {
+                            const importedNutritionRecords = data.nutritionIntake.map(record => ({
+                                ...record,
+                                timestamp: new Date(record.timestamp),
+                                id: Date.now() + Math.random()
+                            }));
+                            nutritionIntakeRecords = [...nutritionIntakeRecords, ...importedNutritionRecords];
+                            localStorage.setItem(NUTRITION_INTAKE_KEY, JSON.stringify(nutritionIntakeRecords));
+                        }
+
                         updateRecordsList();
                         updateStats();
                         updateHistoryStats();
+                        updateNutritionProgress();
                         saveDataToStorage();
                         
-                        alert(`成功导入 ${importedRecords.length} 条新记录！${duplicates > 0 ? `\n跳过了 ${duplicates} 条重复记录` : ''}`);
+                        alert(`成功导入 ${importedRecords.length} 条新记录！${duplicates > 0 ? `\n跳过了 ${duplicates} 条重复记录` : ''}${data.nutritionTargets || data.nutritionIntake ? '\n同时导入了营养数据' : ''}`);
                     }
                 } catch (error) {
                     alert('导入文件解析失败，请检查文件格式！');
@@ -1321,6 +1630,213 @@
             `;
 
             weeklyStatsContainer.innerHTML = weekSummary + weekOverviewHtml + muscleStatsHtml;
+        }
+
+        // =============== 营养记录相关功能 ===============
+
+        // 加载营养数据
+        function loadNutritionData() {
+            // 加载营养目标
+            const savedTargets = localStorage.getItem(NUTRITION_TARGETS_KEY);
+            if (savedTargets) {
+                nutritionTargets = JSON.parse(savedTargets);
+            }
+            
+            // 加载摄入记录
+            const savedIntake = localStorage.getItem(NUTRITION_INTAKE_KEY);
+            if (savedIntake) {
+                nutritionIntakeRecords = JSON.parse(savedIntake).map(record => ({
+                    ...record,
+                    timestamp: new Date(record.timestamp)
+                }));
+            }
+            
+            // 填充目标值到输入框
+            fillNutritionTargets();
+        }
+
+        // 填充营养目标到输入框
+        function fillNutritionTargets() {
+            document.getElementById('training-calories').value = nutritionTargets.training.calories;
+            document.getElementById('training-carbs').value = nutritionTargets.training.carbs;
+            document.getElementById('training-protein').value = nutritionTargets.training.protein;
+            document.getElementById('training-fat').value = nutritionTargets.training.fat;
+            
+            document.getElementById('rest-calories').value = nutritionTargets.rest.calories;
+            document.getElementById('rest-carbs').value = nutritionTargets.rest.carbs;
+            document.getElementById('rest-protein').value = nutritionTargets.rest.protein;
+            document.getElementById('rest-fat').value = nutritionTargets.rest.fat;
+        }
+
+        // 保存营养目标
+        function saveNutritionTargets() {
+            nutritionTargets = {
+                training: {
+                    calories: parseFloat(document.getElementById('training-calories').value) || 0,
+                    carbs: parseFloat(document.getElementById('training-carbs').value) || 0,
+                    protein: parseFloat(document.getElementById('training-protein').value) || 0,
+                    fat: parseFloat(document.getElementById('training-fat').value) || 0
+                },
+                rest: {
+                    calories: parseFloat(document.getElementById('rest-calories').value) || 0,
+                    carbs: parseFloat(document.getElementById('rest-carbs').value) || 0,
+                    protein: parseFloat(document.getElementById('rest-protein').value) || 0,
+                    fat: parseFloat(document.getElementById('rest-fat').value) || 0
+                }
+            };
+            
+            localStorage.setItem(NUTRITION_TARGETS_KEY, JSON.stringify(nutritionTargets));
+            updateNutritionProgress();
+            alert('营养目标已保存！');
+        }
+
+        // 设置事件监听器
+        function setupNutritionEventListeners() {
+            // 监听营养素输入变化，实时计算热量
+            ['food-carbs', 'food-protein', 'food-fat'].forEach(id => {
+                document.getElementById(id).addEventListener('input', calculateFoodCalories);
+            });
+            
+            // 监听日期类型变化
+            document.getElementById('day-type').addEventListener('change', updateNutritionProgress);
+        }
+
+        // 计算食物热量
+        function calculateFoodCalories() {
+            const carbs = parseFloat(document.getElementById('food-carbs').value) || 0;
+            const protein = parseFloat(document.getElementById('food-protein').value) || 0;
+            const fat = parseFloat(document.getElementById('food-fat').value) || 0;
+            
+            // 热量计算：碳水和蛋白质每克4大卡，脂肪每克9大卡
+            const calories = (carbs * 4) + (protein * 4) + (fat * 9);
+            document.getElementById('calculated-calories').textContent = calories.toFixed(1);
+        }
+
+        // 添加食物摄入记录
+        function addFoodIntake() {
+            const foodName = document.getElementById('food-name').value.trim();
+            const carbs = parseFloat(document.getElementById('food-carbs').value) || 0;
+            const protein = parseFloat(document.getElementById('food-protein').value) || 0;
+            const fat = parseFloat(document.getElementById('food-fat').value) || 0;
+            
+            if (!foodName) {
+                alert('请输入食物名称！');
+                return;
+            }
+            
+            if (carbs === 0 && protein === 0 && fat === 0) {
+                alert('请至少输入一种营养素的数值！');
+                return;
+            }
+            
+            const calories = (carbs * 4) + (protein * 4) + (fat * 9);
+            
+            const intakeRecord = {
+                id: Date.now(),
+                foodName: foodName,
+                carbs: carbs,
+                protein: protein,
+                fat: fat,
+                calories: calories,
+                timestamp: new Date()
+            };
+            
+            nutritionIntakeRecords.push(intakeRecord);
+            
+            // 保存到本地存储
+            localStorage.setItem(NUTRITION_INTAKE_KEY, JSON.stringify(nutritionIntakeRecords));
+            
+            // 清空输入框
+            document.getElementById('food-name').value = '';
+            document.getElementById('food-carbs').value = '';
+            document.getElementById('food-protein').value = '';
+            document.getElementById('food-fat').value = '';
+            document.getElementById('calculated-calories').textContent = '0';
+            
+            // 更新显示
+            updateNutritionProgress();
+            updateIntakeList();
+        }
+
+        // 更新营养进度
+        function updateNutritionProgress() {
+            const dayType = document.getElementById('day-type').value;
+            const targets = nutritionTargets[dayType];
+            
+            // 更新日期类型显示
+            document.getElementById('current-day-type').textContent = `今日: ${dayType === 'training' ? '训练日' : '休息日'}`;
+            
+            // 计算今日摄入
+            const today = new Date().toDateString();
+            const todayIntake = nutritionIntakeRecords.filter(record => 
+                record.timestamp.toDateString() === today
+            );
+            
+            const totalIntake = todayIntake.reduce((total, record) => ({
+                calories: total.calories + record.calories,
+                carbs: total.carbs + record.carbs,
+                protein: total.protein + record.protein,
+                fat: total.fat + record.fat
+            }), { calories: 0, carbs: 0, protein: 0, fat: 0 });
+            
+            // 更新进度条
+            updateProgressBar('calories', totalIntake.calories, targets.calories);
+            updateProgressBar('carbs', totalIntake.carbs, targets.carbs);
+            updateProgressBar('protein', totalIntake.protein, targets.protein);
+            updateProgressBar('fat', totalIntake.fat, targets.fat);
+            
+            // 更新摄入列表
+            updateIntakeList();
+        }
+
+        // 更新单个进度条
+        function updateProgressBar(nutrient, current, target) {
+            const percentage = target > 0 ? (current / target) * 100 : 0;
+            const progressElement = document.getElementById(`${nutrient}-progress`);
+            const isOverTarget = percentage > 100;
+            
+            progressElement.style.width = Math.min(percentage, 100) + '%';
+            progressElement.className = `progress-fill ${isOverTarget ? 'over-target' : ''}`;
+            
+            // 更新文本
+            document.getElementById(`${nutrient}-current`).textContent = current.toFixed(1);
+            document.getElementById(`${nutrient}-target`).textContent = target.toFixed(1);
+            document.getElementById(`${nutrient}-percent`).textContent = percentage.toFixed(1);
+        }
+
+        // 更新摄入列表
+        function updateIntakeList() {
+            const today = new Date().toDateString();
+            const todayIntake = nutritionIntakeRecords.filter(record => 
+                record.timestamp.toDateString() === today
+            );
+            
+            const intakeListContainer = document.getElementById('intake-list');
+            
+            if (todayIntake.length === 0) {
+                intakeListContainer.innerHTML = '<p style="text-align: center; color: #666;">今日暂无摄入记录</p>';
+                return;
+            }
+            
+            let listHtml = '';
+            todayIntake.slice().reverse().forEach(record => {
+                listHtml += `
+                    <div class="intake-item">
+                        <h5>${record.foodName}</h5>
+                        <div class="intake-details">
+                            <span>碳水: ${record.carbs.toFixed(1)}g</span>
+                            <span>蛋白: ${record.protein.toFixed(1)}g</span>
+                            <span>脂肪: ${record.fat.toFixed(1)}g</span>
+                            <span>热量: ${record.calories.toFixed(1)}大卡</span>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 0.8rem; color: #999;">
+                            ${record.timestamp.toLocaleTimeString()}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            intakeListContainer.innerHTML = listHtml;
         }
 
         // 页面加载完成后初始化
