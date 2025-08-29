@@ -420,6 +420,97 @@
             text-align: center;
         }
 
+        /* 饮食历史查询样式 */
+        .nutrition-history-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .daily-nutrition-view, .weekly-nutrition-view, .range-nutrition-view {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .daily-nutrition-view h4, .weekly-nutrition-view h4, .range-nutrition-view h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .nutrition-summary-card {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .nutrition-summary-card h5 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .nutrition-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .nutrition-summary-item {
+            text-align: center;
+        }
+
+        .nutrition-summary-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .nutrition-summary-item .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .nutrition-range-stats {
+            margin-top: 15px;
+        }
+
+        .weekly-nutrition-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .nutrition-day-card {
+            background: linear-gradient(135deg, #17a2b8, #6f42c1);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .nutrition-day-card h6 {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .nutrition-day-card .calories {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .nutrition-day-card .macro {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
         .date-filter {
             margin-bottom: 15px;
             display: flex;
@@ -782,6 +873,64 @@
                         <h3>今日摄入列表</h3>
                         <div id="intake-list">
                             <!-- 摄入记录将在这里显示 -->
+                        </div>
+                    </div>
+
+                    <!-- 饮食数据导出导入 -->
+                    <div class="nutrition-export-import" style="margin-top: 20px;">
+                        <h3>📤📥 饮食数据管理</h3>
+                        <div class="export-import-section">
+                            <button class="btn export-btn" onclick="exportNutritionData()">📤 导出饮食数据</button>
+                            <button class="btn import-btn" onclick="document.getElementById('nutrition-import-file').click()">📥 导入饮食数据</button>
+                        </div>
+                        <input type="file" id="nutrition-import-file" class="file-input" accept=".json" onchange="importNutritionData(event)">
+                        <button class="btn clear-btn" onclick="clearNutritionData()" style="width: 100%; margin-top: 10px;">🗑️ 清空饮食记录</button>
+                    </div>
+
+                    <!-- 饮食历史查询 -->
+                    <div class="nutrition-history-section" style="margin-top: 30px;">
+                        <h3>📅 饮食历史查询</h3>
+                        
+                        <!-- 单日饮食查看 -->
+                        <div class="daily-nutrition-view">
+                            <h4>🗓️ 单日饮食查看</h4>
+                            <div class="date-filter">
+                                <label for="nutrition-single-date">选择日期：</label>
+                                <input type="date" id="nutrition-single-date" onchange="showDayNutrition()">
+                                <button class="btn" onclick="showTodayNutrition()" style="padding: 8px 15px; font-size: 14px;">今天</button>
+                            </div>
+                            <div id="daily-nutrition-details" class="daily-details">
+                                <!-- 单日饮食详情将在这里显示 -->
+                            </div>
+                        </div>
+
+                        <!-- 周饮食统计 -->
+                        <div class="weekly-nutrition-view" style="margin-top: 25px;">
+                            <h4>📊 周饮食统计</h4>
+                            <div class="date-filter">
+                                <label for="nutrition-week-start">周开始日期：</label>
+                                <input type="date" id="nutrition-week-start" onchange="showWeeklyNutrition()">
+                                <button class="btn" onclick="showThisWeekNutrition()" style="padding: 8px 15px; font-size: 14px;">本周</button>
+                            </div>
+                            <div id="weekly-nutrition-display" class="weekly-stats">
+                                <!-- 周饮食统计将在这里显示 -->
+                            </div>
+                        </div>
+
+                        <!-- 时间段饮食统计 -->
+                        <div class="range-nutrition-view" style="margin-top: 25px;">
+                            <h4>📈 时间段饮食统计</h4>
+                            <div class="date-filter">
+                                <label for="nutrition-date-from">从：</label>
+                                <input type="date" id="nutrition-date-from" onchange="filterNutritionByDate()">
+                                <label for="nutrition-date-to">到：</label>
+                                <input type="date" id="nutrition-date-to" onchange="filterNutritionByDate()">
+                                <button class="btn" onclick="showAllNutritionHistory()" style="padding: 8px 15px; font-size: 14px;">显示全部</button>
+                            </div>
+                            
+                            <div class="nutrition-range-stats" id="nutrition-range-stats">
+                                <!-- 时间段饮食统计将在这里显示 -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1837,6 +1986,411 @@
             });
             
             intakeListContainer.innerHTML = listHtml;
+        }
+
+        // =============== 饮食历史查询功能 ===============
+
+        // 显示今天的饮食
+        function showTodayNutrition() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('nutrition-single-date').value = today;
+            showDayNutrition();
+        }
+
+        // 显示特定日期的饮食
+        function showDayNutrition() {
+            const selectedDate = document.getElementById('nutrition-single-date').value;
+            if (!selectedDate) return;
+
+            const targetDate = new Date(selectedDate).toDateString();
+            const dayRecords = nutritionIntakeRecords.filter(record => 
+                record.timestamp.toDateString() === targetDate
+            );
+
+            const dailyNutritionContainer = document.getElementById('daily-nutrition-details');
+            
+            if (dayRecords.length === 0) {
+                dailyNutritionContainer.innerHTML = '<p style="text-align: center; color: #666;">该日期无饮食记录</p>';
+                return;
+            }
+
+            // 计算当日总营养
+            const dayTotal = dayRecords.reduce((total, record) => ({
+                calories: total.calories + record.calories,
+                carbs: total.carbs + record.carbs,
+                protein: total.protein + record.protein,
+                fat: total.fat + record.fat
+            }), { calories: 0, carbs: 0, protein: 0, fat: 0 });
+
+            // 创建日期总结
+            let summaryHtml = `
+                <div class="nutrition-summary-card">
+                    <h5>${selectedDate} 饮食总结</h5>
+                    <div class="nutrition-summary-grid">
+                        <div class="nutrition-summary-item">
+                            <div class="value">${dayTotal.calories.toFixed(0)}</div>
+                            <div class="label">热量(大卡)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${dayTotal.carbs.toFixed(1)}</div>
+                            <div class="label">碳水(g)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${dayTotal.protein.toFixed(1)}</div>
+                            <div class="label">蛋白(g)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${dayTotal.fat.toFixed(1)}</div>
+                            <div class="label">脂肪(g)</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center; font-size: 0.9rem; opacity: 0.9;">
+                        共 ${dayRecords.length} 次摄入记录
+                    </div>
+                </div>
+            `;
+
+            // 创建详细记录
+            let detailsHtml = '<div class="day-records">';
+            dayRecords.forEach(record => {
+                detailsHtml += `
+                    <div class="intake-item">
+                        <h5>${record.foodName}</h5>
+                        <div class="intake-details">
+                            <span>碳水: ${record.carbs.toFixed(1)}g</span>
+                            <span>蛋白: ${record.protein.toFixed(1)}g</span>
+                            <span>脂肪: ${record.fat.toFixed(1)}g</span>
+                            <span>热量: ${record.calories.toFixed(1)}大卡</span>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 0.8rem; color: #999;">
+                            ${record.timestamp.toLocaleTimeString()}
+                        </div>
+                    </div>
+                `;
+            });
+            detailsHtml += '</div>';
+
+            dailyNutritionContainer.innerHTML = summaryHtml + detailsHtml;
+        }
+
+        // 显示本周的饮食统计
+        function showThisWeekNutrition() {
+            const today = new Date();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - today.getDay() + 1);
+            document.getElementById('nutrition-week-start').value = monday.toISOString().split('T')[0];
+            showWeeklyNutrition();
+        }
+
+        // 显示周饮食统计
+        function showWeeklyNutrition() {
+            const weekStart = document.getElementById('nutrition-week-start').value;
+            if (!weekStart) return;
+
+            const startDate = new Date(weekStart);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+
+            const weekRecords = nutritionIntakeRecords.filter(record => {
+                const recordDate = new Date(record.timestamp);
+                return recordDate >= startDate && recordDate <= endDate;
+            });
+
+            const weeklyNutritionContainer = document.getElementById('weekly-nutrition-display');
+            
+            if (weekRecords.length === 0) {
+                weeklyNutritionContainer.innerHTML = '<p style="text-align: center; color: #666;">该周无饮食记录</p>';
+                return;
+            }
+
+            // 按天分组
+            const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const weekData = {};
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(startDate);
+                day.setDate(startDate.getDate() + i);
+                const dayString = day.toDateString();
+                const dayRecords = weekRecords.filter(record => 
+                    record.timestamp.toDateString() === dayString
+                );
+                
+                const dayTotal = dayRecords.reduce((total, record) => ({
+                    calories: total.calories + record.calories,
+                    carbs: total.carbs + record.carbs,
+                    protein: total.protein + record.protein,
+                    fat: total.fat + record.fat
+                }), { calories: 0, carbs: 0, protein: 0, fat: 0 });
+                
+                weekData[dayNames[day.getDay()]] = {
+                    date: day.toISOString().split('T')[0],
+                    ...dayTotal,
+                    records: dayRecords.length
+                };
+            }
+
+            // 计算周总量
+            const weekTotal = weekRecords.reduce((total, record) => ({
+                calories: total.calories + record.calories,
+                carbs: total.carbs + record.carbs,
+                protein: total.protein + record.protein,
+                fat: total.fat + record.fat
+            }), { calories: 0, carbs: 0, protein: 0, fat: 0 });
+
+            // 生成周概览HTML
+            let weekOverviewHtml = '<div class="weekly-nutrition-overview">';
+            Object.entries(weekData).forEach(([dayName, data]) => {
+                weekOverviewHtml += `
+                    <div class="nutrition-day-card">
+                        <h6>${dayName}</h6>
+                        <div class="calories">${data.calories.toFixed(0)}</div>
+                        <div class="macro">
+                            C:${data.carbs.toFixed(0)}g P:${data.protein.toFixed(0)}g F:${data.fat.toFixed(0)}g
+                        </div>
+                        <div style="font-size: 0.7rem; opacity: 0.7; margin-top: 5px;">
+                            ${data.records} 次记录
+                        </div>
+                    </div>
+                `;
+            });
+            weekOverviewHtml += '</div>';
+
+            // 周总结
+            const weekSummary = `
+                <div class="nutrition-summary-card">
+                    <h5>${weekStart} 至 ${endDate.toISOString().split('T')[0]} 周总结</h5>
+                    <div class="nutrition-summary-grid">
+                        <div class="nutrition-summary-item">
+                            <div class="value">${weekTotal.calories.toFixed(0)}</div>
+                            <div class="label">总热量(大卡)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${weekTotal.carbs.toFixed(0)}</div>
+                            <div class="label">总碳水(g)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${weekTotal.protein.toFixed(0)}</div>
+                            <div class="label">总蛋白(g)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${weekTotal.fat.toFixed(0)}</div>
+                            <div class="label">总脂肪(g)</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center; font-size: 0.9rem; opacity: 0.9;">
+                        共 ${weekRecords.length} 次摄入记录
+                    </div>
+                </div>
+            `;
+
+            weeklyNutritionContainer.innerHTML = weekSummary + weekOverviewHtml;
+        }
+
+        // 按时间段筛选饮食
+        function filterNutritionByDate() {
+            const dateFrom = document.getElementById('nutrition-date-from').value;
+            const dateTo = document.getElementById('nutrition-date-to').value;
+            
+            if (!dateFrom || !dateTo) return;
+            
+            const fromDate = new Date(dateFrom);
+            const toDate = new Date(dateTo);
+            toDate.setHours(23, 59, 59, 999);
+            
+            const filteredRecords = nutritionIntakeRecords.filter(record => {
+                const recordDate = new Date(record.timestamp);
+                return recordDate >= fromDate && recordDate <= toDate;
+            });
+            
+            displayNutritionRangeStats(filteredRecords, dateFrom, dateTo);
+        }
+
+        // 显示时间段饮食统计
+        function displayNutritionRangeStats(records, dateFrom, dateTo) {
+            const rangeStatsContainer = document.getElementById('nutrition-range-stats');
+            
+            if (records.length === 0) {
+                rangeStatsContainer.innerHTML = '<p style="text-align: center; color: #666;">该时间段内无饮食记录</p>';
+                return;
+            }
+
+            const totalNutrition = records.reduce((total, record) => ({
+                calories: total.calories + record.calories,
+                carbs: total.carbs + record.carbs,
+                protein: total.protein + record.protein,
+                fat: total.fat + record.fat
+            }), { calories: 0, carbs: 0, protein: 0, fat: 0 });
+
+            const uniqueDays = new Set(records.map(record => record.timestamp.toDateString())).size;
+            const avgCaloriesPerDay = uniqueDays > 0 ? totalNutrition.calories / uniqueDays : 0;
+
+            rangeStatsContainer.innerHTML = `
+                <div class="nutrition-summary-card">
+                    <h5>${dateFrom} 至 ${dateTo} 饮食统计</h5>
+                    <div class="nutrition-summary-grid">
+                        <div class="nutrition-summary-item">
+                            <div class="value">${totalNutrition.calories.toFixed(0)}</div>
+                            <div class="label">总热量(大卡)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${totalNutrition.carbs.toFixed(0)}</div>
+                            <div class="label">总碳水(g)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${totalNutrition.protein.toFixed(0)}</div>
+                            <div class="label">总蛋白(g)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${totalNutrition.fat.toFixed(0)}</div>
+                            <div class="label">总脂肪(g)</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${uniqueDays}</div>
+                            <div class="label">记录天数</div>
+                        </div>
+                        <div class="nutrition-summary-item">
+                            <div class="value">${avgCaloriesPerDay.toFixed(0)}</div>
+                            <div class="label">日均热量</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center; font-size: 0.9rem; opacity: 0.9;">
+                        共 ${records.length} 次摄入记录
+                    </div>
+                </div>
+            `;
+        }
+
+        // 显示全部饮食历史
+        function showAllNutritionHistory() {
+            document.getElementById('nutrition-date-from').value = '';
+            document.getElementById('nutrition-date-to').value = '';
+            displayNutritionRangeStats(nutritionIntakeRecords, '所有记录', '');
+        }
+
+        // =============== 饮食数据导出导入功能 ===============
+
+        // 导出饮食数据
+        function exportNutritionData() {
+            if (nutritionIntakeRecords.length === 0 && Object.keys(nutritionTargets).length === 0) {
+                alert('没有饮食数据可以导出！');
+                return;
+            }
+
+            // 计算统计数据
+            const totalCalories = nutritionIntakeRecords.reduce((sum, record) => sum + record.calories, 0);
+            const totalDays = new Set(nutritionIntakeRecords.map(record => record.timestamp.toDateString())).size;
+
+            const data = {
+                // 饮食数据
+                nutritionTargets: nutritionTargets,
+                nutritionIntake: nutritionIntakeRecords,
+                
+                // 导出元数据
+                exportDate: new Date().toISOString(),
+                version: '1.0',
+                type: 'nutrition',
+                
+                // 统计信息
+                summary: {
+                    totalRecords: nutritionIntakeRecords.length,
+                    totalCalories: totalCalories,
+                    totalDays: totalDays,
+                    avgCaloriesPerDay: totalDays > 0 ? totalCalories / totalDays : 0,
+                    dateRange: {
+                        start: nutritionIntakeRecords.length > 0 ? new Date(Math.min(...nutritionIntakeRecords.map(r => r.timestamp))).toISOString() : null,
+                        end: nutritionIntakeRecords.length > 0 ? new Date(Math.max(...nutritionIntakeRecords.map(r => r.timestamp))).toISOString() : null
+                    }
+                }
+            };
+
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nutrition_data_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`饮食数据导出成功！\n包含 ${nutritionIntakeRecords.length} 条记录\n总热量: ${totalCalories.toFixed(0)}大卡\n记录天数: ${totalDays}天`);
+        }
+
+        // 导入饮食数据
+        function importNutritionData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (!data.nutritionIntake && !data.nutritionTargets) {
+                        alert('导入文件不包含饮食数据！');
+                        return;
+                    }
+
+                    let importInfo = '准备导入饮食数据:\n';
+                    if (data.nutritionIntake) {
+                        importInfo += `- 摄入记录: ${data.nutritionIntake.length} 条\n`;
+                    }
+                    if (data.nutritionTargets) {
+                        importInfo += `- 营养目标: 已包含\n`;
+                    }
+                    if (data.summary) {
+                        importInfo += `- 总热量: ${data.summary.totalCalories?.toFixed(0) || '未知'}大卡\n`;
+                        importInfo += `- 记录天数: ${data.summary.totalDays || '未知'}天\n`;
+                    }
+                    importInfo += '\n导入数据将与现有数据合并，确定要继续吗？';
+
+                    if (confirm(importInfo)) {
+                        // 导入营养目标
+                        if (data.nutritionTargets) {
+                            nutritionTargets = { ...nutritionTargets, ...data.nutritionTargets };
+                            localStorage.setItem(NUTRITION_TARGETS_KEY, JSON.stringify(nutritionTargets));
+                            fillNutritionTargets();
+                        }
+                        
+                        // 导入摄入记录
+                        if (data.nutritionIntake && Array.isArray(data.nutritionIntake)) {
+                            const importedRecords = data.nutritionIntake.map(record => ({
+                                ...record,
+                                timestamp: new Date(record.timestamp),
+                                id: Date.now() + Math.random()
+                            }));
+                            nutritionIntakeRecords = [...nutritionIntakeRecords, ...importedRecords];
+                            localStorage.setItem(NUTRITION_INTAKE_KEY, JSON.stringify(nutritionIntakeRecords));
+                        }
+
+                        updateNutritionProgress();
+                        alert(`饮食数据导入成功！${data.nutritionIntake ? `\n导入了 ${data.nutritionIntake.length} 条摄入记录` : ''}${data.nutritionTargets ? '\n更新了营养目标' : ''}`);
+                    }
+                } catch (error) {
+                    alert('导入文件解析失败，请检查文件格式！');
+                    console.error('导入错误:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // 清空饮食数据
+        function clearNutritionData() {
+            if (nutritionIntakeRecords.length === 0) {
+                alert('没有饮食记录需要清空！');
+                return;
+            }
+
+            if (confirm('确定要清空所有饮食记录吗？营养目标将保留，此操作不可撤销！')) {
+                nutritionIntakeRecords = [];
+                localStorage.setItem(NUTRITION_INTAKE_KEY, JSON.stringify(nutritionIntakeRecords));
+                updateNutritionProgress();
+                alert('饮食记录已清空！');
+            }
         }
 
         // 页面加载完成后初始化
