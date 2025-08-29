@@ -239,6 +239,73 @@
             border-radius: 15px;
         }
 
+        .daily-view-section, .weekly-stats-section, .range-view-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .daily-view-section h4, .weekly-stats-section h4, .range-view-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .daily-details {
+            margin-top: 15px;
+        }
+
+        .day-summary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .day-summary h5 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .day-summary .total-volume {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .weekly-stats {
+            margin-top: 15px;
+        }
+
+        .week-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .week-day-card {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .week-day-card h6 {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .week-day-card .volume {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
         .date-filter {
             margin-bottom: 15px;
             display: flex;
@@ -398,16 +465,47 @@
                 
                 <div class="history-section">
                     <h3>📅 历史记录</h3>
-                    <div class="date-filter">
-                        <label for="date-from">从：</label>
-                        <input type="date" id="date-from" onchange="filterByDate()">
-                        <label for="date-to">到：</label>
-                        <input type="date" id="date-to" onchange="filterByDate()">
-                        <button class="btn" onclick="showAllHistory()" style="padding: 8px 15px; font-size: 14px;">显示全部</button>
-                    </div>
                     
-                    <div class="history-stats" id="history-stats">
-                        <!-- 历史统计将在这里显示 -->
+                    <!-- 单日查看 -->
+                    <div class="daily-view-section">
+                        <h4>🗓️ 单日训练查看</h4>
+                        <div class="date-filter">
+                            <label for="single-date">选择日期：</label>
+                            <input type="date" id="single-date" onchange="showDayTraining()">
+                            <button class="btn" onclick="showToday()" style="padding: 8px 15px; font-size: 14px;">今天</button>
+                        </div>
+                        <div id="daily-training-details" class="daily-details">
+                            <!-- 单日训练详情将在这里显示 -->
+                        </div>
+                    </div>
+
+                    <!-- 周统计 -->
+                    <div class="weekly-stats-section">
+                        <h4>📊 周训练统计</h4>
+                        <div class="date-filter">
+                            <label for="week-start">周开始日期：</label>
+                            <input type="date" id="week-start" onchange="showWeeklyStats()">
+                            <button class="btn" onclick="showThisWeek()" style="padding: 8px 15px; font-size: 14px;">本周</button>
+                        </div>
+                        <div id="weekly-stats-display" class="weekly-stats">
+                            <!-- 周统计将在这里显示 -->
+                        </div>
+                    </div>
+
+                    <!-- 时间段查看 -->
+                    <div class="range-view-section">
+                        <h4>📈 时间段统计</h4>
+                        <div class="date-filter">
+                            <label for="date-from">从：</label>
+                            <input type="date" id="date-from" onchange="filterByDate()">
+                            <label for="date-to">到：</label>
+                            <input type="date" id="date-to" onchange="filterByDate()">
+                            <button class="btn" onclick="showAllHistory()" style="padding: 8px 15px; font-size: 14px;">显示全部</button>
+                        </div>
+                        
+                        <div class="history-stats" id="history-stats">
+                            <!-- 历史统计将在这里显示 -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -726,10 +824,104 @@
                 return;
             }
 
+            // 计算统计数据便于分析
+            const totalVolume = trainingRecords.reduce((sum, record) => sum + record.volume, 0);
+            const totalDays = new Set(trainingRecords.map(record => record.timestamp.toDateString())).size;
+            
+            // 按月份分组统计
+            const monthlyStats = {};
+            trainingRecords.forEach(record => {
+                const monthKey = record.timestamp.toISOString().substring(0, 7); // YYYY-MM
+                if (!monthlyStats[monthKey]) {
+                    monthlyStats[monthKey] = {
+                        totalVolume: 0,
+                        totalRecords: 0,
+                        muscleGroups: {},
+                        exercises: {},
+                        days: new Set()
+                    };
+                }
+                
+                monthlyStats[monthKey].totalVolume += record.volume;
+                monthlyStats[monthKey].totalRecords += 1;
+                monthlyStats[monthKey].days.add(record.timestamp.toDateString());
+                
+                // 部位统计
+                if (!monthlyStats[monthKey].muscleGroups[record.muscleGroup]) {
+                    monthlyStats[monthKey].muscleGroups[record.muscleGroup] = 0;
+                }
+                monthlyStats[monthKey].muscleGroups[record.muscleGroup] += record.volume;
+                
+                // 动作统计
+                if (!monthlyStats[monthKey].exercises[record.exercise]) {
+                    monthlyStats[monthKey].exercises[record.exercise] = 0;
+                }
+                monthlyStats[monthKey].exercises[record.exercise] += 1;
+            });
+
+            // 转换Set为数组长度
+            Object.keys(monthlyStats).forEach(month => {
+                monthlyStats[month].trainingDays = monthlyStats[month].days.size;
+                delete monthlyStats[month].days; // 删除Set对象，JSON无法序列化
+            });
+
+            // 按周统计
+            const weeklyStats = {};
+            trainingRecords.forEach(record => {
+                const date = new Date(record.timestamp);
+                const monday = new Date(date);
+                monday.setDate(date.getDate() - date.getDay() + 1);
+                const weekKey = monday.toISOString().split('T')[0]; // 周一的日期作为key
+                
+                if (!weeklyStats[weekKey]) {
+                    weeklyStats[weekKey] = {
+                        totalVolume: 0,
+                        totalRecords: 0,
+                        muscleGroups: {}
+                    };
+                }
+                
+                weeklyStats[weekKey].totalVolume += record.volume;
+                weeklyStats[weekKey].totalRecords += 1;
+                
+                if (!weeklyStats[weekKey].muscleGroups[record.muscleGroup]) {
+                    weeklyStats[weekKey].muscleGroups[record.muscleGroup] = 0;
+                }
+                weeklyStats[weekKey].muscleGroups[record.muscleGroup] += record.volume;
+            });
+
             const data = {
+                // 原始数据
                 records: trainingRecords,
+                
+                // 导出元数据
                 exportDate: new Date().toISOString(),
-                version: '1.0'
+                version: '2.0',
+                
+                // 总体统计
+                summary: {
+                    totalRecords: trainingRecords.length,
+                    totalVolume: totalVolume,
+                    totalTrainingDays: totalDays,
+                    averageVolumePerDay: totalDays > 0 ? totalVolume / totalDays : 0,
+                    dateRange: {
+                        start: trainingRecords.length > 0 ? new Date(Math.min(...trainingRecords.map(r => r.timestamp))).toISOString() : null,
+                        end: trainingRecords.length > 0 ? new Date(Math.max(...trainingRecords.map(r => r.timestamp))).toISOString() : null
+                    }
+                },
+                
+                // 月度统计（便于复盘）
+                monthlyAnalysis: monthlyStats,
+                
+                // 周统计
+                weeklyAnalysis: weeklyStats,
+                
+                // 设备信息（帮助识别数据来源）
+                deviceInfo: {
+                    platform: navigator.platform,
+                    userAgent: navigator.userAgent.substring(0, 100), // 截断避免过长
+                    exportSource: 'web'
+                }
             };
 
             const jsonStr = JSON.stringify(data, null, 2);
@@ -738,13 +930,13 @@
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `fitness_records_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `fitness_analysis_${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            alert('数据导出成功！');
+            alert(`数据导出成功！\n包含 ${trainingRecords.length} 条记录\n总容量: ${totalVolume.toFixed(1)}kg\n训练天数: ${totalDays}天`);
         }
 
         // 导入数据
@@ -762,22 +954,62 @@
                         return;
                     }
 
-                    if (confirm('导入数据将与现有数据合并，确定要继续吗？')) {
-                        // 重新构建日期对象
-                        const importedRecords = data.records.map(record => ({
+                    // 显示导入文件的详细信息
+                    let importInfo = `准备导入 ${data.records.length} 条记录`;
+                    if (data.summary) {
+                        importInfo += `\n文件包含统计信息：\n- 总容量: ${data.summary.totalVolume?.toFixed(1) || '未知'}kg\n- 训练天数: ${data.summary.totalTrainingDays || '未知'}天`;
+                        if (data.summary.dateRange) {
+                            importInfo += `\n- 时间范围: ${data.summary.dateRange.start?.split('T')[0] || '未知'} 至 ${data.summary.dateRange.end?.split('T')[0] || '未知'}`;
+                        }
+                    }
+                    if (data.deviceInfo?.exportSource) {
+                        importInfo += `\n- 导出来源: ${data.deviceInfo.exportSource}`;
+                    }
+                    importInfo += '\n\n导入数据将与现有数据合并，确定要继续吗？';
+
+                    if (confirm(importInfo)) {
+                        // 检查数据重复（基于时间戳和动作名称）
+                        const existingKeys = new Set(trainingRecords.map(r => `${r.timestamp.getTime()}_${r.exercise}_${r.sets}_${r.weight}_${r.reps}`));
+                        
+                        // 过滤重复数据
+                        const newRecords = data.records.filter(record => {
+                            const timestamp = new Date(record.timestamp);
+                            const key = `${timestamp.getTime()}_${record.exercise}_${record.sets}_${record.weight}_${record.reps}`;
+                            return !existingKeys.has(key);
+                        });
+
+                        if (newRecords.length === 0) {
+                            alert('没有新数据需要导入，所有记录都已存在！');
+                            return;
+                        }
+
+                        let duplicates = 0;
+                        if (newRecords.length < data.records.length) {
+                            duplicates = data.records.length - newRecords.length;
+                            if (!confirm(`检测到 ${duplicates} 条重复记录将被跳过，仅导入 ${newRecords.length} 条新记录，是否继续？`)) {
+                                return;
+                            }
+                        }
+
+                        // 重新构建日期对象并确保ID唯一
+                        const importedRecords = newRecords.map(record => ({
                             ...record,
                             timestamp: new Date(record.timestamp),
                             id: Date.now() + Math.random() // 确保ID唯一
                         }));
 
                         trainingRecords = [...trainingRecords, ...importedRecords];
+                        
+                        // 按时间排序
+                        trainingRecords.sort((a, b) => a.timestamp - b.timestamp);
+                        
                         recalculateTodayVolumes();
                         updateRecordsList();
                         updateStats();
                         updateHistoryStats();
                         saveDataToStorage();
                         
-                        alert(`成功导入 ${importedRecords.length} 条记录！`);
+                        alert(`成功导入 ${importedRecords.length} 条新记录！${duplicates > 0 ? `\n跳过了 ${duplicates} 条重复记录` : ''}`);
                     }
                 } catch (error) {
                     alert('导入文件解析失败，请检查文件格式！');
@@ -917,6 +1149,178 @@
             document.getElementById('date-from').value = '';
             document.getElementById('date-to').value = '';
             updateHistoryStats();
+        }
+
+        // 显示今天的训练
+        function showToday() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('single-date').value = today;
+            showDayTraining();
+        }
+
+        // 显示特定日期的训练
+        function showDayTraining() {
+            const selectedDate = document.getElementById('single-date').value;
+            if (!selectedDate) return;
+
+            const targetDate = new Date(selectedDate).toDateString();
+            const dayRecords = trainingRecords.filter(record => 
+                record.timestamp.toDateString() === targetDate
+            );
+
+            const dailyDetailsContainer = document.getElementById('daily-training-details');
+            
+            if (dayRecords.length === 0) {
+                dailyDetailsContainer.innerHTML = '<p style="text-align: center; color: #666;">该日期无训练记录</p>';
+                return;
+            }
+
+            // 计算当日总容量和部位分布
+            const dayTotalVolume = dayRecords.reduce((sum, record) => sum + record.volume, 0);
+            const dayMuscleVolumes = {};
+            dayRecords.forEach(record => {
+                dayMuscleVolumes[record.muscleGroup] = (dayMuscleVolumes[record.muscleGroup] || 0) + record.volume;
+            });
+
+            // 创建日期总结
+            let summaryHtml = `
+                <div class="day-summary">
+                    <h5>${selectedDate} 训练总结</h5>
+                    <div class="total-volume">${dayTotalVolume.toFixed(1)} kg</div>
+                    <div>共 ${dayRecords.length} 项训练记录</div>
+                </div>
+            `;
+
+            // 创建详细记录
+            let detailsHtml = '<div class="day-records">';
+            dayRecords.forEach(record => {
+                detailsHtml += `
+                    <div class="exercise-record">
+                        <h4>${record.exercise}</h4>
+                        <div class="exercise-details">
+                            ${record.sets}组 × ${record.weight}kg × ${record.reps}次 = ${record.volume}kg
+                            <br>
+                            部位: ${record.muscleGroup} | 时间: ${record.timestamp.toLocaleTimeString()}
+                        </div>
+                    </div>
+                `;
+            });
+            detailsHtml += '</div>';
+
+            // 创建部位统计
+            let muscleStatsHtml = '<div class="muscle-stats" style="margin-top: 15px;">';
+            Object.entries(dayMuscleVolumes)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([muscle, volume]) => {
+                    muscleStatsHtml += `
+                        <div class="muscle-card">
+                            <h3>${muscle}</h3>
+                            <div class="volume">${volume.toFixed(1)}</div>
+                            <div class="unit">kg</div>
+                        </div>
+                    `;
+                });
+            muscleStatsHtml += '</div>';
+
+            dailyDetailsContainer.innerHTML = summaryHtml + detailsHtml + muscleStatsHtml;
+        }
+
+        // 显示本周的统计
+        function showThisWeek() {
+            const today = new Date();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - today.getDay() + 1); // 获取本周一
+            document.getElementById('week-start').value = monday.toISOString().split('T')[0];
+            showWeeklyStats();
+        }
+
+        // 显示周统计
+        function showWeeklyStats() {
+            const weekStart = document.getElementById('week-start').value;
+            if (!weekStart) return;
+
+            const startDate = new Date(weekStart);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6); // 一周7天
+
+            // 筛选本周的记录
+            const weekRecords = trainingRecords.filter(record => {
+                const recordDate = new Date(record.timestamp);
+                return recordDate >= startDate && recordDate <= endDate;
+            });
+
+            const weeklyStatsContainer = document.getElementById('weekly-stats-display');
+            
+            if (weekRecords.length === 0) {
+                weeklyStatsContainer.innerHTML = '<p style="text-align: center; color: #666;">该周无训练记录</p>';
+                return;
+            }
+
+            // 按天分组
+            const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const weekData = {};
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(startDate);
+                day.setDate(startDate.getDate() + i);
+                const dayString = day.toDateString();
+                const dayRecords = weekRecords.filter(record => 
+                    record.timestamp.toDateString() === dayString
+                );
+                const dayVolume = dayRecords.reduce((sum, record) => sum + record.volume, 0);
+                
+                weekData[dayNames[day.getDay()]] = {
+                    date: day.toISOString().split('T')[0],
+                    volume: dayVolume,
+                    records: dayRecords.length
+                };
+            }
+
+            // 计算周总量和部位统计
+            const weekTotalVolume = weekRecords.reduce((sum, record) => sum + record.volume, 0);
+            const weekMuscleVolumes = {};
+            weekRecords.forEach(record => {
+                weekMuscleVolumes[record.muscleGroup] = (weekMuscleVolumes[record.muscleGroup] || 0) + record.volume;
+            });
+
+            // 生成周概览HTML
+            let weekOverviewHtml = '<div class="week-overview">';
+            Object.entries(weekData).forEach(([dayName, data]) => {
+                weekOverviewHtml += `
+                    <div class="week-day-card">
+                        <h6>${dayName}</h6>
+                        <div class="volume">${data.volume.toFixed(0)}</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">${data.records} 项训练</div>
+                    </div>
+                `;
+            });
+            weekOverviewHtml += '</div>';
+
+            // 生成部位统计HTML
+            let muscleStatsHtml = '<h5 style="margin: 20px 0 15px 0; color: #333;">周部位统计</h5><div class="muscle-stats">';
+            Object.entries(weekMuscleVolumes)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([muscle, volume]) => {
+                    muscleStatsHtml += `
+                        <div class="muscle-card">
+                            <h3>${muscle}</h3>
+                            <div class="volume">${volume.toFixed(1)}</div>
+                            <div class="unit">kg</div>
+                        </div>
+                    `;
+                });
+            muscleStatsHtml += '</div>';
+
+            // 周总结
+            const weekSummary = `
+                <div class="day-summary">
+                    <h5>${weekStart} 至 ${endDate.toISOString().split('T')[0]} 周总结</h5>
+                    <div class="total-volume">${weekTotalVolume.toFixed(1)} kg</div>
+                    <div>共 ${weekRecords.length} 项训练记录</div>
+                </div>
+            `;
+
+            weeklyStatsContainer.innerHTML = weekSummary + weekOverviewHtml + muscleStatsHtml;
         }
 
         // 页面加载完成后初始化
